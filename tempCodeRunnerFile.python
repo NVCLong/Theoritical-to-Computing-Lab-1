@@ -1,0 +1,253 @@
+import math
+
+def e1(x, n):
+    # e^(-x) = 1-x +x^2/2!-x^3/3!+...
+    res = 0
+    for i in range(n):
+        res += (-1)**i * x**i / math.factorial(i)
+    return res
+
+def e2(x,n):
+    # e^(-x) = 1/(1+x +x^2/2!+x^3/3!+...)
+    res = 0
+    for i in range(n):
+        res += x**i / math.factorial(i)
+    return 1 / res
+
+true_val = 0.049787
+x = 3
+n = 5
+
+print(f"{'n':>2s}{'e^(-x) Series 1':>20s}{'True Rel. Error':>20s}{'Approx. Rel. Error':>20s}")
+for i in range(1, n+1):
+    approx1 = e1(x, i)
+    approx2 = e2(x, i)
+    true_err = abs((true_val - approx1) / true_val)
+    approx_err = abs((approx2 - approx1) / approx2)
+    print(f"{i:2d}{approx1:20.16f}{true_err:20.16f}{approx_err:20.16f}")
+    print(f"{i:2d}{approx2:20.16f}{true_err:20.16f}{approx_err:20.16f}")
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Define the function
+def f(x):
+    return x**3 - 2*x + 4
+
+# Define the interval
+x_min = -2
+x_max = 2
+
+# Define the step size
+h = 0.25
+
+# Define the x-values
+x_values = np.arange(x_min, x_max+h, h)
+
+# Calculate the y-values
+y_values = f(x_values)
+
+# Calculate the first derivative
+def first_derivative(x,h):
+    return (f(x+h) - f(x))/h
+
+# Calculate the second derivative
+def second_derivative(x,h):
+    return (f(x+h) - 2*f(x) + f(x-h))/(h**2)
+
+# Calculate the first derivative values
+first_derivative_values = first_derivative(x_values,h)
+
+# Calculate the second derivative values
+second_derivative_values = second_derivative(x_values,h)
+
+# Calculate the forward finite difference approximation
+def forward_finite_difference(x,h):
+    return (f(x+h) - f(x))/h
+
+# Calculate the backward finite difference approximation
+def backward_finite_difference(x,h):
+    return (f(x) - f(x-h))/h
+
+# Calculate the centered finite difference approximation
+def centered_finite_difference(x,h):
+    return (f(x+h) - f(x-h))/(2*h)
+
+# Calculate the forward finite difference approximation values
+forward_finite_difference_values = forward_finite_difference(x_values,h)
+
+# Calculate the backward finite difference approximation values
+backward_finite_difference_values = backward_finite_difference(x_values,h)
+
+# Calculate the centered finite difference approximation values
+centered_finite_difference_values = centered_finite_difference(x_values,h)
+
+# Plot the graph
+plt.plot(x_values, y_values, label='f(x)')
+plt.plot(x_values, first_derivative_values, label='First Derivative')
+plt.plot(x_values, second_derivative_values, label='Second Derivative')
+plt.plot(x_values, forward_finite_difference_values, label='Forward Finite Difference')
+plt.plot(x_values, backward_finite_difference_values, label='Backward Finite Difference')
+plt.plot(x_values, centered_finite_difference_values, label='Centered Finite Difference')
+plt.legend()
+plt.show()
+
+
+#Q4.A
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0.1, 2, 100)
+y = np.log(x**4) - 0.7
+
+plt.plot(x, y)
+plt.axhline(y=0, color='r', linestyle='-')
+plt.xlabel('x')
+plt.ylabel('ln(x^4) - 0.7')
+plt.title('Graphical:')
+plt.show()
+
+
+#Q4.B
+def f(x):
+    return np.log(x**4) - 0.7
+
+xl = 0.5
+xu = 2
+xr = (xl + xu) / 2
+
+for i in range(3):
+    if f(xr) == 0:
+        break
+    elif f(xl) * f(xr) < 0:
+        xu = xr
+    else:
+        xl = xr
+    xr = (xl + xu) / 2
+
+print('Bisection method:', xr)
+
+#Q4.C
+
+xl = 0.5
+xu = 2
+
+for i in range(3):
+    if f(xl) == 0:
+        xr = xl
+        break
+    elif f(xu) == 0:
+        xr = xu
+        break
+    xr = xu - (f(xu) * (xl - xu)) / (f(xl) - f(xu))
+    if f(xr) == 0:
+        break
+    elif f(xl) * f(xr) < 0:
+        xu = xr
+    else:
+        xl = xr
+
+print("False-position method:", xr)
+
+#ques 5:
+
+import math
+
+def f(x):
+    return -2*x**6 - 1.6*x**4 + 12*x + 1
+
+def f_prime(x):
+    return -12*x**5 - 6.4*x**3 + 12
+
+x_l = 0
+x_u = 1
+tolerance = 0.05
+
+x_r = (x_l + x_u)/2
+while abs((x_u - x_l)/x_r) >= tolerance:
+    if f_prime(x_r) == 0:
+        break
+    elif f_prime(x_l) * f_prime(x_r) < 0:
+        x_u = x_r
+    else:
+        x_l = x_r
+    x_r = (x_l + x_u)/2
+
+x_max = x_r
+f_max = f(x_max)
+
+print("The maximum of f(x) is f_max = {:.4f} and occurs at x = x_max = {:.4f}.".format(f_max, x_max))
+
+#Ques 6:
+def f(x):
+    return -2*x**6 - 1.6*x**4 + 12*x + 1
+
+def bisection(x_l, x_u, tol):
+    while (x_u - x_l) / max(abs(x_l), abs(x_u)) >= tol:
+        x_m = (x_l + x_u) / 2
+        if f(x_m) * f(x_u) < 0:
+            x_l = x_m
+        else:
+            x_u = x_m
+    return (x_l + x_u) / 2
+
+max_x = bisection(0, 1, 0.05)
+max_f = f(max_x)
+
+print("Maximum of f(x) is approximately {:.5f} at x = {:.5f}".format(max_f, max_x))
+
+#Ques 8:
+
+def f(x):
+    return x**3.5 - 80
+
+def false_position(x_l, x_u, tol):
+    while True:
+        x_r = x_u - f(x_u) * (x_l - x_u) / (f(x_l) - f(x_u))
+        if f(x_r) * f(x_u) < 0:
+            x_l = x_r
+        else:
+            x_u = x_r
+        if abs((x_u - x_l) / max(abs(x_l), abs(x_u))) < tol:
+            return x_r
+
+root = false_position(2.0, 5.0, 0.025)
+print("The real root of the equation x^3.5 = 80 is approximately {:.5f}".format(root))
+
+#ques7
+import math
+
+def maclaurin_sin(x, n):
+    """
+    Calculates the Maclaurin series expansion of sin(x) up to n terms
+    """
+    result = 0
+    for i in range(n):
+        sign = (-1) ** i
+        term = x ** (2*i + 1) / math.factorial(2*i + 1)
+        result += sign * term
+    return result
+
+def taylor_sin(x, n):
+    """
+    Calculates the Taylor series expansion of sin(x) up to n terms
+    """
+    result = 0
+    for i in range(n):
+        sign = (-1) ** i
+        term = x ** (2*i + 1) / math.factorial(2*i + 1)
+        result += sign * term
+    return result
+
+# Approximate sin(π/6) to 6 significant figures using the Maclaurin series expansion
+x = math.pi / 6
+eps = 0.5 * 10 ** (-6)
+n = 1
+while abs(maclaurin_sin(x, n) - math.sin(x)) >= eps:
+    n += 1
+print("Maclaurin series expansion:")
+print(f"sin({x}) = {maclaurin_sin(x, n)} (approximation using {n} terms)")
+
+# Approximate sin(π/6) to 6 significant figures using the Taylor series expansion
+x = math.pi / 6
